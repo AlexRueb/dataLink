@@ -47,8 +47,8 @@ if __name__ == '__main__':
     
     #create some send events    
     for i in range(3):
-        client.udt_send(2, 'Sample data %d and this is also my test string that should be atleast 80 characters long' % i)
-    
+        client.udt_send(2, 'Sample data %d and this is also my test string' % i)
+        client.udt_send(2, ' that should be atleast 80 characters long')
     
     #give the network sufficient time to transfer all packets before quitting
     sleep(simulation_time)
