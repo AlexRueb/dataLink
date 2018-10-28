@@ -5,7 +5,7 @@ Created on Oct 12, 2016
 '''
 import queue
 import threading
-
+import random
 
 ## wrapper class for a queue of packets
 class Interface:
@@ -81,22 +81,26 @@ class Host:
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
     def udt_send(self, dst_addr, data_S):
-        if len(data_S) > (self.out_intf_L[0].mtu):
+        if len(data_S) > (23):
             len_remain = len(data_S)
+            fragflag = 1
+            id = random.randint(1,10)
             while len_remain > 0:
                 data_split = ''
-                for i in range(self.out_intf_L[0].mtu - 5):
+                for i in range(23):
                     if len(data_S) < 1:
+                        fragflag = 0
                         break
                     data_split = data_split + data_S[0]
                     data_S = data_S[1:]
+                data_split = str(id) + str(fragflag) + data_split
                 len_remain = len_remain - len(data_split)
                 p = NetworkPacket(dst_addr, data_split)
                 self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
                 print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
             return
         else:
-            p = NetworkPacket(dst_addr, data_split)
+            p = NetworkPacket(dst_addr, data_S)
             self.out_intf_L[0].put(p.to_byte_S()) #send packets always enqueued successfully
             print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
             return
@@ -105,6 +109,9 @@ class Host:
     def udt_receive(self):
         pkt_S = self.in_intf_L[0].get()
         if pkt_S is not None:
+            routerNum = str(pkt_S[0:5])
+            id = pkt_S[5]
+            fragflag = pkt_S[6]
             print('%s: received packet "%s" on the in interface' % (self, pkt_S))
        
     ## thread target for the host to keep receiving data
