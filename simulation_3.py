@@ -15,6 +15,24 @@ simulation_time = 2  # give the network sufficient time to transfer all packets 
 if __name__ == '__main__':
     object_L = []  # keeps track of objects, so we can kill their threads
 
+    # create routing tables
+    table_a = {
+        "host_1": 0,
+        "host_2": 1
+    }
+    table_b = {
+        "host_1": 0,
+        "host_2": 0
+    }
+    table_c = {
+        "host_1": 0,
+        "host_2": 0
+    }
+    table_d = {
+        "host_1": 0,
+        "host_2": 1
+    }
+
     # create network nodes
     client_1 = network_3.Host(1)
     object_L.append(client_1)
