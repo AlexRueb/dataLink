@@ -109,9 +109,14 @@ class Host:
     def udt_receive(self):
         pkt_S = self.in_intf_L[0].get()
         if pkt_S is not None:
-            routerNum = str(pkt_S[0:5])
-            id = pkt_S[5]
-            fragflag = pkt_S[6]
+            destination = str(pkt_S[0:5])
+            id = int(pkt_S[5])
+            fragflag = int(pkt_S[6])
+            offset = pkt_S[7:10]
+            offset = int(offset)
+            self.dict['id'] = id
+            self.dict['offset'] = offset
+            self.dict['fragflag'] = fragflag 
             print('%s: received packet "%s" on the in interface' % (self, pkt_S))
        
     ## thread target for the host to keep receiving data
