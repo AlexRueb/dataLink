@@ -1,0 +1,14 @@
+361
+part 2:
+edit udt_send to add a header
+edit udt_recieve to parse header
+
+
+q--> do we need to include the previous segmentation in part 2? no
+q--> router A and D both have 2 in interfaces and 2 out interfaces
+part 3:
+set up new configuration with all routers and hosts in Simulation.py
+set up routing tables passed to router by simulation.py
+modify routers to look at routing tables 
+extend NetworkPacket with source/destination address
+hardcode routing tables to work the way we want
