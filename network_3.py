@@ -38,7 +38,8 @@ class NetworkPacket:
 
     ##@param dst_addr: address of the destination host
     # @param data_S: packet payload
-    def __init__(self, dst_addr, data_S):
+    def __init__(self, src_addr, dst_addr, data_S):
+        self.src_addr = src_addr
         self.dst_addr = dst_addr
         self.data_S = data_S
 
@@ -56,9 +57,10 @@ class NetworkPacket:
     # @param byte_S: byte string representation of the packet
     @classmethod
     def from_byte_S(self, byte_S):
-        dst_addr = int(byte_S[0 : NetworkPacket.dst_addr_S_length])
+        src_addr = int(byte_S[0])
+        dst_addr = int(byte_S[1 : NetworkPacket.dst_addr_S_length])
         data_S = byte_S[NetworkPacket.dst_addr_S_length : ]
-        return self(dst_addr, data_S)
+        return self(src_addr, dst_addr, data_S)
 
 
 
@@ -80,8 +82,8 @@ class Host:
     # create a packet and enqueue for transmission
     # @param dst_addr: destination address for the packet
     # @param data_S: data being transmitted to the network layer
-    def udt_send(self, dst_addr, data_S):
-        p = NetworkPacket(dst_addr, data_S)
+    def udt_send(self, src_addr, dst_addr, data_S):
+        p = NetworkPacket(src_addr, dst_addr, data_S)
         self.out_intf_L[0].put(p.to_byte_S())  # send packets always enqueued successfully
         print('%s: sending packet "%s" on the out interface with mtu=%d' % (self, p, self.out_intf_L[0].mtu))
 
@@ -134,7 +136,7 @@ class Router:
                 if pkt_S is not None:
                     p = NetworkPacket.from_byte_S(pkt_S)  # parse a packet out
                     # lookup proper interface from f_table dict
-                    self.out_intf_L[self.f_table[pkt_S.dst_addr]].put(p.to_byte_S(), True)
+                    self.out_intf_L[self.f_table[int(pkt_S[4])]].put(p.to_byte_S(), True)
                     print('%s: forwarding packet "%s" from interface %d to %d with mtu %d' \
                         % (self, p, i, i, self.out_intf_L[i].mtu))
             except queue.Full:
